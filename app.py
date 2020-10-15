@@ -3,11 +3,14 @@ from flask_cors import CORS
 import basa_data_api as api
 app = Flask(__name__)
 CORS(app)
-api.init()
 
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+@app.route('/ready')
+def ready():
+    return "Ready" if api.df != None else "Not ready"
 
 @app.route('/columns')
 def columns():
@@ -43,3 +46,4 @@ def subset():
 
 if __name__ == '__main__':
     app.run()
+    api.df = api.init_df()
