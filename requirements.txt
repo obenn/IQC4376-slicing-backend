@@ -15,6 +15,5 @@ pylint==2.6.0
 pynvim==0.4.1
 six==1.15.0
 toml==0.10.1
-virtualenv==20.0.32+ds
 wrapt==1.12.1
 zipp==1.0.0
