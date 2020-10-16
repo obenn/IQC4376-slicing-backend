@@ -3,7 +3,7 @@ from flask_cors import CORS
 import basa_data_api as api
 app = Flask(__name__)
 CORS(app)
-api.init_df()
+api.df = api.init_df()
 
 @app.route('/')
 def hello_world():
