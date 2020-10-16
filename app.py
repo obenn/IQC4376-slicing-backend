@@ -9,10 +9,6 @@ api.df = api.init_df()
 def hello_world():
     return 'Hello World!'
 
-@app.route('/ready')
-def ready():
-    return "Ready" if api.df != None else "Not ready"
-
 @app.route('/columns')
 def columns():
     return jsonify(api.columns())
@@ -27,12 +23,13 @@ def preview():
     else:
         columns = columns.split(',')
     dfs = api.subset(beginning=beginning, end=end, columns=columns)
-    return jsonify(dfs[0:10].to_dict(orient="records"))
+    return dfs[0:10].to_html()
+    #return jsonify(dfs[0:10].to_dict(orient="records"))
 
 @app.route('/subset')
 def subset():
     beginning = int(request.args.get('beginning', 0))
-    end = int(request.args.get('end', 1000))
+    end = int(request.args.get('end', len(api.df.index)))
     columns = request.args.get('columns', None)
     if not columns:
         columns = api.columns()
