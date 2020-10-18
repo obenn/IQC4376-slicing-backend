@@ -18,16 +18,30 @@ def columns():
     return jsonify(list(df))
 
 def get_subset(args):
-    beginning = int(args.get('s', 0))
-    end = int(args.get('e', len(df.index)))
-    columns = args.get('c', None)
-    filter_ = args.get('f', None)
+    beginning = int(args.get('sta', 0))
+    end = int(args.get('end', len(df.index)))
+    columns = args.get('col', None)
     if not columns:
         columns = list(df)
     else:
         columns = columns.split(',')
-    dfs = (df.query(filter_) if filter_ else df).iloc[beginning:end][columns]
-    return dfs, len(dfs.index) 
+    filter_ = args.get('fil', None)
+    concats = args.get('con', None) 
+    evals = args.get('eva', None) 
+    dfs = (df.query(filter_) if filter_ else df)
+    if concats:
+        for concat in concats.split(','):
+            new_col, expressions = concat.split('=')
+            new_col = new_col.strip()
+            dfs[new_col] = ''
+            for expresssion in expressions.split("+"):
+                dfs[new_col] += dfs[expresssion.strip()].map(str)
+            columns.append(new_col)
+    if evals:
+        for eval_ in evals.split(','):
+            dfs.eval(eval_, inplace=True)
+            columns.append(eval_.split('=')[0].strip())
+    return dfs.iloc[beginning:end][columns], len(dfs.index) 
 
 @app.route('/preview')
 def preview():
