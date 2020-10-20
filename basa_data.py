@@ -28,7 +28,13 @@ def get_subset(args):
     filter_ = args.get('fil', None)
     concats = args.get('con', None) 
     evals = args.get('eva', None) 
-    reducer = args.get('red', None) 
+    reducer_name = args.get('red', 'none')
+    reducer_op = {
+        'none': None,
+        'mean': lambda d : d.mean(),
+        'value_counts': lambda d: d.value_counts(),
+        'std': lambda d: d.std(),
+    }[reducer_name] 
     dfs = (df.query(filter_) if filter_ else df)
     if concats:
         for concat in concats.split(','):
@@ -43,8 +49,8 @@ def get_subset(args):
             dfs.eval(eval_, inplace=True)
             columns.append(eval_.split('=')[0].strip())
     dfs = dfs.iloc[beginning:end][columns]
-    if reducer:
-        dfs = pd.DataFrame(getattr(dfs, reducer)(), columns=[reducer])
+    if reducer_op:
+        dfs = pd.DataFrame(reducer_op(df), columns=[reducer_name])
     return dfs, len(dfs.index)
 
 @app.route('/preview')
@@ -54,15 +60,11 @@ def preview():
 
 @app.route('/subset')
 def subset():
-    dfs, length = get_subset(request.args)
+    dfs, _ = get_subset(request.args)
     res = make_response(dfs.to_csv())
     res.headers["Content-Disposition"] = "attachment; filename=export.csv"
     res.headers["Content-Type"] = "text/csv"
     return res
 
-
 if __name__ == '__main__':
-    main()
-
-def main():
     app.run(host='0.0.0.0', port=8080)
