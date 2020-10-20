@@ -42,10 +42,10 @@ def get_subset(args):
         for eval_ in evals.split(','):
             dfs.eval(eval_, inplace=True)
             columns.append(eval_.split('=')[0].strip())
-    dff = dfs.iloc[beginning:end][columns]
+    dfs = dfs.iloc[beginning:end][columns]
     if reducer:
-        dff = pd.DataFrame(getattr(dff, reducer)(), columns=[reducer])
-    return dff, len(dff.index)
+        dfs = pd.DataFrame(getattr(dfs, reducer)(), columns=[reducer])
+    return dfs, len(dfs.index)
 
 @app.route('/preview')
 def preview():
