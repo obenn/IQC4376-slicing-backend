@@ -50,7 +50,7 @@ def get_subset(args):
             columns.append(eval_.split('=')[0].strip())
     dfs = dfs.iloc[beginning:end][columns]
     if reducer_op:
-        dfs = pd.DataFrame(reducer_op(df), columns=[reducer_name])
+        dfs = pd.DataFrame(reducer_op(dfs), columns=[reducer_name])
     return dfs, len(dfs.index)
 
 @app.route('/preview')
