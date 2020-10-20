@@ -28,6 +28,7 @@ def get_subset(args):
     filter_ = args.get('fil', None)
     concats = args.get('con', None) 
     evals = args.get('eva', None) 
+    reducer = args.get('red', None) 
     dfs = (df.query(filter_) if filter_ else df)
     if concats:
         for concat in concats.split(','):
@@ -41,7 +42,10 @@ def get_subset(args):
         for eval_ in evals.split(','):
             dfs.eval(eval_, inplace=True)
             columns.append(eval_.split('=')[0].strip())
-    return dfs.iloc[beginning:end][columns], len(dfs.index) 
+    dff = dfs.iloc[beginning:end][columns]
+    if reducer:
+        dff = pd.DataFrame(getattr(dff, reducer)(), columns=[reducer])
+    return dff, len(dff.index)
 
 @app.route('/preview')
 def preview():
