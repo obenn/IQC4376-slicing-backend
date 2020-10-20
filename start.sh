@@ -1,1 +1,1 @@
-gunicorn -w 1 -b 0.0.0.0:8080 wsgi:main
+gunicorn -w 1 -b 0.0.0.0:8080 basa_data:app
